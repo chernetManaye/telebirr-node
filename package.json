@@ -1,0 +1,36 @@
+{
+  "name": "telebirr-node",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "watch": "tsx src/dev.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.0.6",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "nanoid": "^5.1.6",
+    "sonyflake": "^1.1.2"
+  }
+}
