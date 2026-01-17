@@ -26,8 +26,7 @@ export function requestQueryOrder(
   }
 ): Promise<{
   data: QueryOrderResponse;
-  status: number;
-  headers: http.IncomingHttpHeaders;
+  message: string;
 }> {
   const reqBody: TelebirrQueryorderRequest = {
     timestamp: createTimestamp(),
@@ -74,25 +73,18 @@ export function requestQueryOrder(
           const status = res.statusCode || 0;
           let parsed: any = raw;
 
-          try {
-            parsed = JSON.parse(raw);
-          } catch {
-            // keep raw if parsing fails
-          }
+          parsed = JSON.parse(raw);
 
           if (status < 200 || status >= 300) {
             return reject({
               message: "Telebirr queryOrder request failed",
-              status,
               data: parsed,
-              headers: res.headers,
             });
           }
 
           resolve({
             data: parsed,
-            status,
-            headers: res.headers,
+            message: "Telebirr queryOrder request successful",
           });
         });
       }
@@ -101,8 +93,7 @@ export function requestQueryOrder(
     req.on("error", (err) => {
       reject({
         message: "Telebirr queryOrder network error",
-        cause: err,
-        code: (err as any).code,
+        data: err,
       });
     });
 

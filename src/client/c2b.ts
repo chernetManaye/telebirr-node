@@ -12,6 +12,7 @@ import { TELEBIRR_URLS, CHECKOUT_OTHER_PARAMS } from "../constants/urls";
 import { signRequest } from "../utils/signature";
 import { createTimestamp } from "../utils/timestamp";
 import { createNonceStr } from "../utils/nonce";
+import { GeneratedCredentials } from "../types/credentials";
 
 export class C2B {
   private token?: typeof FabricTokenResponse;
@@ -19,8 +20,16 @@ export class C2B {
 
   constructor(config: TelebirrConfig) {
     if (config.mode === "simulate") {
-      generateCredentials();
-      this.config = config;
+      const credentials: GeneratedCredentials = generateCredentials();
+
+      this.config = {
+        ...config,
+        appId: credentials.FABRIC_APP_ID,
+        appSecret: credentials.FABRIC_APP_SECRET,
+        merchantAppId: credentials.MERCHANT_APP_ID,
+        merchantCode: credentials.MERCHANT_CODE,
+        privateKey: credentials.PRIVATE_KEY,
+      };
     } else {
       this.config = config;
     }
@@ -63,7 +72,7 @@ export class C2B {
 
     return webBase + rawRequest + CHECKOUT_OTHER_PARAMS;
   }
-  async preOrder(input: GenerateCheckoutUrlInput): Promise<string | void> {
+  async checkout(input: GenerateCheckoutUrlInput): Promise<string | void> {
     const token = await this.getFabricToken();
 
     if (!token) return;

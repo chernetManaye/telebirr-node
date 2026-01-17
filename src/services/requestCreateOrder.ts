@@ -26,9 +26,8 @@ export function requestCreateOrder(
     http: boolean;
   }
 ): Promise<{
+  message: string;
   data: CreateOrderResponse;
-  status: number;
-  headers: http.IncomingHttpHeaders;
 }> {
   const reqBody: TelebirrPreorderRequest = {
     timestamp: createTimestamp(),
@@ -87,25 +86,18 @@ export function requestCreateOrder(
           const status = res.statusCode || 0;
           let parsed: any = raw;
 
-          try {
-            parsed = JSON.parse(raw);
-          } catch {
-            // keep raw string if JSON parsing fails
-          }
+          parsed = JSON.parse(raw);
 
           if (status < 200 || status >= 300) {
             return reject({
               message: "Telebirr preorder request failed",
-              status,
               data: parsed,
-              headers: res.headers,
             });
           }
 
           resolve({
+            message: "Telebirr preorder request successful",
             data: parsed,
-            status,
-            headers: res.headers,
           });
         });
       }
@@ -114,8 +106,7 @@ export function requestCreateOrder(
     req.on("error", (err) => {
       reject({
         message: "Telebirr preorder network error",
-        cause: err,
-        code: (err as any).code,
+        data: err,
       });
     });
 

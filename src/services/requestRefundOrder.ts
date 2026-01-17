@@ -24,8 +24,7 @@ export function requestRefund(
   }
 ): Promise<{
   data: RefundResponse;
-  status: number;
-  headers: http.IncomingHttpHeaders;
+  message: string;
 }> {
   const reqBody: TelebirrRefundRequest = {
     timestamp: createTimestamp(),
@@ -76,25 +75,20 @@ export function requestRefund(
           const status = res.statusCode || 0;
           let parsed: any = raw;
 
-          try {
-            parsed = JSON.parse(raw);
-          } catch {
-            // keep raw string if JSON parsing fails
-          }
+          parsed = JSON.parse(raw);
 
           if (status < 200 || status >= 300) {
             return reject({
               message: "Telebirr refund request failed",
-              status,
+
               data: parsed,
-              headers: res.headers,
             });
           }
 
           resolve({
             data: parsed,
-            status,
-            headers: res.headers,
+
+            message: "Telebirr refund request successful",
           });
         });
       }
@@ -103,8 +97,7 @@ export function requestRefund(
     req.on("error", (err) => {
       reject({
         message: "Telebirr refund network error",
-        cause: err,
-        code: (err as any).code,
+        data: err,
       });
     });
 
